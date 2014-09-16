@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
+import java.util.Date;
 
 public class CrimeFragment extends Fragment {
   private static final String TAG = CrimeFragment.class.getSimpleName();
@@ -51,7 +54,7 @@ public class CrimeFragment extends Fragment {
     });
 
     mDateButton = (Button) v.findViewById(R.id.crime_date_button);
-    mDateButton.setText(mCrime.getDate().toString());
+    mDateButton.setText(formatDate(mCrime.getDate()));
     mDateButton.setEnabled(false);
 
     mSolvedCheckBox = (CheckBox) v.findViewById(R.id.crime_solved_checkbox);
@@ -64,4 +67,10 @@ public class CrimeFragment extends Fragment {
 
     return v;
   }
+
+  private String formatDate(Date d) {
+    CharSequence format = DateFormat.format("EEEE, MMM d, yyyy", d);
+    return format.toString();
+  }
+
 }
