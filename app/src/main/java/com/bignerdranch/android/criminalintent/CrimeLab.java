@@ -15,7 +15,7 @@ public class CrimeLab {
     mAppContext = appContext;
     mCrimesMap = new LinkedHashMap<UUID, Crime>();
     for (int i = 0; i < 100; i++) {
-      Crime c = new Crime();
+      Crime c = new Crime(i);
       c.setTitle("Crime #" + i);
       c.setSolved(i % 2 == 0); // Every other one
       mCrimesMap.put(c.getId(), c);

@@ -1,7 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -19,6 +22,8 @@ import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
   private static final String TAG = CrimeFragment.class.getSimpleName();
+  private static final String DIALOG_DATE = "date";
+  private static final int REQUEST_DATE = 0;
 
   public static final String EXTRA_CRIME_ID =
       "com.bignerdranch.android.criminalintent.crime_id";
@@ -69,7 +74,13 @@ public class CrimeFragment extends Fragment {
 
     mDateButton = (Button) v.findViewById(R.id.crime_date_button);
     mDateButton.setText(formatDate(mCrime.getDate()));
-    mDateButton.setEnabled(false);
+    mDateButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View v) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+        dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+        dialog.show(fm, DIALOG_DATE);
+      } });
 
     mSolvedCheckBox = (CheckBox) v.findViewById(R.id.crime_solved_checkbox);
     mSolvedCheckBox.setChecked(mCrime.isSolved());
@@ -86,6 +97,17 @@ public class CrimeFragment extends Fragment {
   private String formatDate(Date d) {
     CharSequence format = DateFormat.format("EEEE, MMM d, yyyy", d);
     return format.toString();
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (resultCode != Activity.RESULT_OK) return;
+    if (requestCode == REQUEST_DATE) {
+      Long date = (Long)data
+          .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+      mCrime.setDate(new Date(date));
+      mDateButton.setText(mCrime.getDate().toString());
+    }
   }
 
 }

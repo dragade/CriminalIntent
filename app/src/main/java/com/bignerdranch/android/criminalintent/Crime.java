@@ -6,15 +6,21 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Crime {
+  private final int mPosition;
   private UUID mId;
   private String mTitle;
   private Date mDate;
   private boolean mSolved;
 
-  public Crime() {
+  public Crime(int position) {
+    mPosition = position;
     mId = UUID.randomUUID();
     mDate = new Date();
 
+  }
+
+  public int getPosition() {
+    return mPosition;
   }
 
   public UUID getId() {
