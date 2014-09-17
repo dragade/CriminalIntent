@@ -1,13 +1,25 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.provider.ContactsContract;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.UUID;
 
 public class Crime {
+  private static final String JSON_ID = "id";
+  private static final String JSON_TITLE = "title";
+  private static final String JSON_SOLVED = "solved";
+  private static final String JSON_DATE = "date";
+  private static final String JSON_SUSPECT = "suspect";
+
   private UUID mId;
   private String mTitle;
   private Date mDate;
   private boolean mSolved;
+  private String mSuspect;
 
   public Crime() {
     mId = UUID.randomUUID();
@@ -46,5 +58,13 @@ public class Crime {
   @Override
   public String toString() {
     return mTitle;
+  }
+
+  public String getSuspect() {
+    return mSuspect;
+  }
+
+  public void setSuspect(String suspect) {
+    mSuspect = suspect;
   }
 }
