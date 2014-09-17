@@ -14,6 +14,12 @@ public class CrimeLab {
   private CrimeLab(Context appContext) {
     mAppContext = appContext;
     mCrimes = new ArrayList<Crime>();
+    for (int i=0; i < 10; i++) {
+      Crime c = new Crime();
+      c.setSolved(i%2==0);
+      c.setTitle("Crime-" + i);
+      mCrimes.add(c);
+    }
   }
 
   public static CrimeLab get(Context c) {
@@ -48,5 +54,9 @@ public class CrimeLab {
 
   public ArrayList<Crime> getCrimes() {
     return mCrimes;
+  }
+
+  public void deleteCrime(Crime c) {
+    mCrimes.remove(c);
   }
 }
