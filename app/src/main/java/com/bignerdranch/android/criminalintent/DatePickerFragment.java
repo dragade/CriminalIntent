@@ -21,6 +21,15 @@ public class DatePickerFragment extends DialogFragment {
 
   private Date mDate;
 
+  private void sendResult(int resultCode) {
+    if (getTargetFragment() == null)
+      return;
+    Intent i = new Intent();
+    i.putExtra(EXTRA_DATE, mDate.getTime());
+    getTargetFragment()
+        .onActivityResult(getTargetRequestCode(), resultCode, i);
+  }
+
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     long date = getArguments().getLong(EXTRA_DATE);
@@ -30,6 +39,8 @@ public class DatePickerFragment extends DialogFragment {
     int year = calendar.get(Calendar.YEAR);
     int month = calendar.get(Calendar.MONTH);
     int day = calendar.get(Calendar.DAY_OF_MONTH);
+    final int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+    final int min = calendar.get(Calendar.MINUTE);
 
     View v = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_date, null);
@@ -38,7 +49,7 @@ public class DatePickerFragment extends DialogFragment {
     datePicker.init(year, month, day, new DatePicker.OnDateChangedListener() {
       public void onDateChanged(DatePicker view, int year, int month, int day) {
         // Translate year, month, day into a Date object using a calendar
-        mDate = new GregorianCalendar(year, month, day).getTime();
+        mDate = new GregorianCalendar(year, month, day, hourOfDay, min).getTime();
         // Update argument to preserve selected value on rotation
         getArguments().putLong(EXTRA_DATE, mDate.getTime());
       }
@@ -55,15 +66,6 @@ public class DatePickerFragment extends DialogFragment {
               }
             })
         .create();
-  }
-
-  private void sendResult(int resultCode) {
-    if (getTargetFragment() == null)
-      return;
-    Intent i = new Intent();
-    i.putExtra(EXTRA_DATE, mDate.getTime());
-    getTargetFragment()
-        .onActivityResult(getTargetRequestCode(), resultCode, i);
   }
 
   public static DatePickerFragment newInstance(Date d) {
