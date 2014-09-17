@@ -41,7 +41,7 @@ public class CrimePagerActivity extends FragmentActivity {
     UUID crimeId = (UUID)getIntent()
         .getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
     Crime currentCrime = crimeLab.getCrime(crimeId);
-    mViewPager.setCurrentItem(currentCrime.getPosition());
+    mViewPager.setCurrentItem(crimeLab.getPosition(currentCrime.getId()));
 
     mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
       @Override

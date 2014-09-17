@@ -7,19 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class CrimeLab {
-  private LinkedHashMap<UUID, Crime> mCrimesMap;
+  private ArrayList<Crime> mCrimes;
   private static CrimeLab sCrimeLab;
   private Context mAppContext;
 
   private CrimeLab(Context appContext) {
     mAppContext = appContext;
-    mCrimesMap = new LinkedHashMap<UUID, Crime>();
-    for (int i = 0; i < 100; i++) {
-      Crime c = new Crime(i);
-      c.setTitle("Crime #" + i);
-      c.setSolved(i % 2 == 0); // Every other one
-      mCrimesMap.put(c.getId(), c);
-    }
+    mCrimes = new ArrayList<Crime>();
   }
 
   public static CrimeLab get(Context c) {
@@ -29,11 +23,30 @@ public class CrimeLab {
     return sCrimeLab;
   }
 
+  public void addCrime(Crime c) {
+    mCrimes.add(c);
+  }
+
   public Crime getCrime(UUID id) {
-    return mCrimesMap.get(id);
+    for (Crime c : mCrimes) {
+      if (c.getId().equals(id)) {
+        return c;
+      }
+    }
+    return null;
+  }
+
+  public int getPosition(UUID id) {
+    for (int i=0; i < mCrimes.size(); i++) {
+      Crime c = mCrimes.get(i);
+      if (c.getId().equals(id)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public ArrayList<Crime> getCrimes() {
-    return new ArrayList<Crime>(mCrimesMap.values());
+    return mCrimes;
   }
 }
