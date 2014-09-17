@@ -3,8 +3,13 @@ package com.bignerdranch.android.criminalintent;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -22,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
@@ -30,6 +36,7 @@ public class CrimeFragment extends Fragment {
   private static final String DIALOG_TIME = "time";
   private static final int REQUEST_DATE = 0;
   private static final int REQUEST_TIME = 1;
+  private static final int REQUEST_CONTACT = 2;
 
   public static final String EXTRA_CRIME_ID =
       "com.bignerdranch.android.criminalintent.crime_id";
@@ -42,6 +49,7 @@ public class CrimeFragment extends Fragment {
   private Button mDateButton;
   private Button mTimeButton;
   private CheckBox mSolvedCheckBox;
+  private Button mSuspectButton;
 
   public static CrimeFragment newInstance(UUID crimeId) {
     Bundle args = new Bundle();
@@ -117,6 +125,26 @@ public class CrimeFragment extends Fragment {
         startActivity(i);
       } });
 
+    mSuspectButton = (Button)v.findViewById(R.id.crime_suspect_button);
+    PackageManager pm = getActivity().getPackageManager();
+    final Intent chooseSuspectIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+    List<ResolveInfo> activities = pm.queryIntentActivities(chooseSuspectIntent, 0);
+    boolean isIntentSafe = activities.size() > 0;
+    if (isIntentSafe) {
+      mSuspectButton.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          startActivityForResult(chooseSuspectIntent, REQUEST_CONTACT);
+        } });
+    }
+    else {
+      mSuspectButton.setEnabled(false);
+    }
+
+
+    if (mCrime.getSuspect() != null) {
+      mSuspectButton.setText(mCrime.getSuspect());
+    }
+
     return v;
   }
 
@@ -130,6 +158,30 @@ public class CrimeFragment extends Fragment {
       mCrime.setDate(new Date(date));
       updateDate();
       updateTime();
+    }
+    else if (requestCode == REQUEST_CONTACT) {
+      Uri contactUri = data.getData();
+      // Specify which fields you want your query to return
+      // values for.
+      String[] queryFields = new String[] {
+          ContactsContract.Contacts.DISPLAY_NAME
+      };
+      // Perform your query - the contactUri is like a "where"
+      // clause here
+      Cursor c = getActivity().getContentResolver()
+          .query(contactUri, queryFields, null, null, null);
+      // Double-check that you actually got results
+      if (c.getCount() == 0) {
+        c.close();
+        return;
+      }
+      // Pull out the first column of the first row of data -
+      // that is your suspect's name.
+      c.moveToFirst();
+      String suspect = c.getString(0);
+      mCrime.setSuspect(suspect);
+      mSuspectButton.setText(suspect);
+      c.close();
     }
   }
 
